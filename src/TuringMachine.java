@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class TuringMachine {
+    private String name;
     private static int nextId = 1;
     private int id;
     private Set<String> states;
@@ -18,6 +19,7 @@ public class TuringMachine {
 
     public TuringMachine(String name) {
         this.id = nextId++;
+        this.name = name;
         this.states = new HashSet<>();
         this.acceptStates = new HashSet<>();
         this.rejectStates = new HashSet<>();
@@ -27,6 +29,7 @@ public class TuringMachine {
     }
 
     public int getId() { return id; }
+    public String getName() { return name; }
     public Set<String> getStates() { return states; }
     public String getStartState() { return startState; }
     public Set<String> getAcceptStates() { return acceptStates; }
