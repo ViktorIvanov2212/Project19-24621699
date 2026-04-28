@@ -7,7 +7,7 @@ public class OpenCommand extends AbstractCommand {
     public String getName() { return "open"; }
 
     @Override
-    public String getDescription() { return "Opens a file"; }
+    public String getDescription() { return "Opens a file and loads machines from it"; }
 
     @Override
     public boolean execute(String[] args) {

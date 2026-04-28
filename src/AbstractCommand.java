@@ -4,6 +4,7 @@ public abstract class AbstractCommand implements Command {
     public AbstractCommand(FileManager fileManager) {
         this.fileManager = fileManager;
     }
+
     protected TuringMachine getMachineById(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
@@ -17,6 +18,7 @@ public abstract class AbstractCommand implements Command {
             return null;
         }
     }
+
     protected boolean validateArgs(String[] args, int minArgs, String usage) {
         if (args.length < minArgs) {
             System.out.println("Usage: " + usage);
@@ -24,6 +26,7 @@ public abstract class AbstractCommand implements Command {
         }
         return true;
     }
+
     protected int parseMaxSteps(String[] args, int startIndex, int defaultValue) {
         for (int i = startIndex; i < args.length; i++) {
             if (args[i].startsWith("max=")) {
@@ -35,5 +38,13 @@ public abstract class AbstractCommand implements Command {
             }
         }
         return defaultValue;
+    }
+
+    protected boolean requireOpenFile() {
+        if (fileManager.getCurrentFile() == null) {
+            System.out.println("Error: No file is currently open. Use 'open <filename>' first.");
+            return false;
+        }
+        return true;
     }
 }
