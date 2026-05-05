@@ -1,0 +1,22 @@
+package CommandInterface.Commands.File;
+
+import CommandInterface.AbstractCommand;
+import Mains.FileManager;
+
+public class OpenCommand extends AbstractCommand {
+    public OpenCommand(FileManager fileManager) {
+        super(fileManager);
+    }
+
+    @Override
+    public String getName() { return "open"; }
+
+    @Override
+    public String getDescription() { return "Opens a file and loads machines from it"; }
+
+    @Override
+    public boolean execute(String[] args) {
+        if (!validateArgs(args, 2, "open <filename>")) return true;
+        return fileManager.open(args[1]);
+    }
+}
