@@ -12,7 +12,11 @@ public class FileManager {
     }
 
     /**
-     * Отваря файл и зарежда машините от него
+     * Отваря файл и зарежда машините от него.
+     * Ако файлът не съществува, се създава нов.
+     *
+     * параметър filename Име на файла
+     * return true при успех, false при грешка
      */
     public boolean open(String filename) {
         try {
@@ -76,7 +80,10 @@ public class FileManager {
     }
 
     /**
-     * Запазва машините във файл в прост текстов формат
+     * Запазва всички машини в текущия файл в текстов формат.
+     *
+     * параметър: file Файл за запис
+     * return true при успех, false при грешка
      */
     private boolean saveToFile(File file) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
@@ -144,7 +151,10 @@ public class FileManager {
     }
 
     /**
-     * Зарежда машините от текстов файл
+     * Зарежда машините от текстов файл.
+     * Парсва команди като STATE, START, ACCEPT, TRANSITION.
+     *
+     * параметър file: Файл за четене
      */
     private void loadMachinesFromFile(File file) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -216,8 +226,11 @@ public class FileManager {
     }
 
     /**
-     * Парсва и добавя преход към машината
-     * Формат: fromState,readSymbol,toState,writeSymbol,direction
+     * Парсва и добавя преход към машината.
+     * Очакван формат: "fromState,readSymbol,toState,writeSymbol,direction"
+     *
+     * параметър tm Машина, към която да се добави преходът
+     * параметър data Низ с данни за прехода
      */
     private void parseAndAddTransition(TuringMachine tm, String data) {
         try {
