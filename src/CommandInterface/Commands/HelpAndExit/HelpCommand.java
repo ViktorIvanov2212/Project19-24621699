@@ -6,30 +6,15 @@ import Mains.FileManager;
 
 import java.util.Map;
 
+import java.util.Map;
 public class HelpCommand extends AbstractCommand {
-    private Map<String, Command> commands;
-
-    public HelpCommand(FileManager fileManager, Map<String, Command> commands) {
-        super(fileManager);
-        this.commands = commands;
-    }
-
-    @Override
-    public String getName() { return "help"; }
-
-    @Override
-    public String getDescription() { return "Prints this information"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        System.out.println("The following commands are supported:");
-        for (Command cmd : commands.values()) {
-            System.out.println(String.format("  %-15s - %s", cmd.getName(), cmd.getDescription()));
-        }
-        return true;
-    }
-
-    public void setCommands(Map<String, Command> commands) {
-        this.commands = commands;
+    private final Map<String, Command> cmds;
+    public HelpCommand(FileManager fm, Map<String, Command> cmds) { super(fm); this.cmds = cmds; }
+    @Override public String getName() { return "help"; }
+    @Override public String getDescription() { return "Show commands"; }
+    @Override public String execute(String[] args) {
+        StringBuilder sb = new StringBuilder("Available commands:\n");
+        cmds.values().forEach(c -> sb.append(String.format("  %-12s - %s\n", c.getName(), c.getDescription())));
+        return sb.toString();
     }
 }

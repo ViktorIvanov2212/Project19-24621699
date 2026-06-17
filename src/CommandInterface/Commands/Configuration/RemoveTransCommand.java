@@ -1,34 +1,25 @@
 package CommandInterface.Commands.Configuration;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
 import Mains.FileManager;
 import Mains.Transition;
 import Mains.TuringMachine;
 
+import java.util.Map;
+
 public class RemoveTransCommand extends AbstractCommand {
-    public RemoveTransCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "removetrans"; }
-
-    @Override
-    public String getDescription() { return "Remove transition"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 4, "removetrans <id> <state> <symbol>")) return true;
+    public RemoveTransCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "removetrans"; }
+    @Override public String getDescription() { return "Remove transition"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 4, "removetrans <id> <state> <symbol>");
+        requireOpenFile();
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            Transition removed = tm.removeTransition(args[2], args[3].charAt(0));
-            if (removed != null) {
-                System.out.println("Mains.Transition removed: " + removed);
-                fileManager.markChanged();
-            } else {
-                System.out.println("No such transition found");
-            }
-        }
-        return true;
+        char symbol = args[3].charAt(0);
+        Map<Character, Transition> map = tm.getTransitions().get(args[2]);
+        if (map == null || !map.containsKey(symbol)) throw new CommandException("Transition not found");
+        map.remove(symbol);
+        return "Transition (" + args[2] + ", " + symbol + ") removed";
     }
 }

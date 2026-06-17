@@ -42,8 +42,7 @@ public class Transition {
      * @param writeSymbol  Символ за запис на лентата
      * @param direction    Посока на движение (L/R/S)
      */
-    public Transition(String fromState, char readSymbol, String toState,
-                      char writeSymbol, MoveDirection direction) {
+    public Transition(String fromState, char readSymbol, String toState, char writeSymbol, MoveDirection direction) {
         this.fromState = fromState;
         this.readSymbol = readSymbol;
         this.toState = toState;
@@ -69,7 +68,7 @@ public class Transition {
     @Override
     public String toString() {
         return String.format("δ(%s, %c) = (%s, %c, %s)",
-                fromState, readSymbol, toState, writeSymbol, direction);
+         fromState, readSymbol, toState, writeSymbol, direction);
     }
 
     /**
@@ -89,9 +88,8 @@ public class Transition {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Transition)) return false;
-        Transition that = (Transition) o;
-        return readSymbol == that.readSymbol &&
-                fromState.equals(that.fromState);
+        Transition t = (Transition) o;
+        return readSymbol == t.readSymbol && fromState.equals(t.fromState);
     }
 
     /**
@@ -101,7 +99,5 @@ public class Transition {
      * @return Хеш код базиран на fromState и readSymbol
      */
     @Override
-    public int hashCode() {
-        return Objects.hash(fromState, readSymbol);
-    }
+    public int hashCode() { return Objects.hash(fromState, readSymbol); }
 }

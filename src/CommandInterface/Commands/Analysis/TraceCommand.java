@@ -1,47 +1,32 @@
 package CommandInterface.Commands.Analysis;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
 import Mains.FileManager;
 import Mains.TuringMachine;
 
 import java.util.List;
 
 public class TraceCommand extends AbstractCommand {
-    public TraceCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "trace"; }
-
-    @Override
-    public String getDescription() { return "Show first k configurations"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 4, "trace <id> <word> <k> [max=<n>]")) return true;
+    public TraceCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "trace"; }
+    @Override public String getDescription() { return "Show first k configurations"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 4, "trace <id> <word> <k> [max=<n>]");
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            try {
-                int k = Integer.parseInt(args[3]);
-                int maxSteps = parseMaxSteps(args, 4, 1000);
-
-                tm.init(args[2]);
-                List<String> trace = tm.getExecutionTrace();
-
-                System.out.println("First " + k + " configurations:");
-                int count = 0;
-                while (count < k && (tm.isRunning() || count == 0)) {
-                    if (count > 0) tm.step();
-                    if (count < trace.size()) {
-                        System.out.println(trace.get(count));
-                    }
-                    count++;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number: " + args[3]);
-            }
+        int k = Integer.parseInt(args[3]);
+        int max = parseMaxSteps(args, 4, 1000);
+        tm.init(args[2]);
+        StringBuilder sb = new StringBuilder("Trace for '" + args[2] + "':\n");
+        sb.append("INIT: State=").append(tm.getCurrentState().getName())
+                .append(" Head=").append(tm.getTape().getHeadPosition())
+                .append(" Tape=").append(tm.getTape().getWindow(0, Math.max(tm.getTape().getHeadPosition()+10, 10))).append("\n");
+        for (int i = 0; i < k && tm.isRunning(); i++) {
+            tm.step();
+            sb.append("STEP ").append(tm.getSteps()).append(": State=").append(tm.getCurrentState().getName())
+                    .append(" Head=").append(tm.getTape().getHeadPosition())
+                    .append(" Tape=").append(tm.getTape().getWindow(0, Math.max(tm.getTape().getHeadPosition()+10, 10))).append("\n");
         }
-        return true;
+        return sb.toString().trim();
     }
 }

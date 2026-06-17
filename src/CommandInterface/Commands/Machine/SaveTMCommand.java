@@ -1,27 +1,22 @@
 package CommandInterface.Commands.Machine;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
 import Mains.FileManager;
 import Mains.TuringMachine;
 
 public class SaveTMCommand extends AbstractCommand {
-    public SaveTMCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "savetm"; }
-
-    @Override
-    public String getDescription() { return "Save machine to file"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 3, "savetm <id> <filename>")) return true;
+    public SaveTMCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "savetm"; }
+    @Override public String getDescription() { return "Save specific machine to file"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 3, "savetm <id> <filename>");
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            System.out.println("Saving machine " + args[1] + " (" + tm.getName() + ") to " + args[2]);
+        try {
+            fileManager.saveSingleMachine(tm, args[2]);
+            return "Machine " + tm.getId() + " saved to " + args[2];
+        } catch (Exception e) {
+            throw new CommandException("Failed to save machine: " + e.getMessage());
         }
-        return true;
     }
 }

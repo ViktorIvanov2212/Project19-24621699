@@ -1,46 +1,29 @@
 package CommandInterface.Commands.Analysis;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
+import Mains.ExecutionResult;
 import Mains.FileManager;
 import Mains.TuringMachine;
 
 public class ReportCommand extends AbstractCommand {
-    public ReportCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "report"; }
-
-    @Override
-    public String getDescription() { return "Show execution report"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 3, "report <id> <word> [max=<n>]")) return true;
+    public ReportCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "report"; }
+    @Override public String getDescription() { return "Full execution report"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 3, "report <id> <word> [max=<n>]");
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            int maxSteps = parseMaxSteps(args, 3, 1000);
-
-            tm.init(args[2]);
-            tm.run(maxSteps);
-
-            System.out.println("=== EXECUTION REPORT ===");
-            System.out.println("Input: " + args[2]);
-            System.out.println("Steps executed: " + tm.getStepsExecuted());
-            System.out.println("Final state: " + tm.getCurrentState());
-            System.out.println("Final tape: " + tm.getCurrentTape());
-            System.out.println("Head position: " + tm.getHeadPosition());
-
-            if (tm.getAcceptStates().contains(tm.getCurrentState())) {
-                System.out.println("Result: ACCEPT");
-            } else if (tm.getRejectStates().contains(tm.getCurrentState())) {
-                System.out.println("Result: REJECT");
-            } else {
-                System.out.println("Result: HALT");
-            }
-            System.out.println("========================");
-        }
-        return true;
+        int max = parseMaxSteps(args, 3, 1000);
+        tm.init(args[2]);
+        ExecutionResult res = tm.run(max);
+        return String.format("=== REPORT ===" +
+                        "\nInput:%s" +
+                        "\nStatus:%s" +
+                        "\nSteps:%d" +
+                        "\nFinalState:%s" +
+                        "\nHead:%d" +
+                        "\nTape:%s" +
+                        "\n================",
+                args[2], res.status(), res.stepsExecuted(), res.finalState().getName(), res.headPosition(), res.tapeSnapshot());
     }
 }

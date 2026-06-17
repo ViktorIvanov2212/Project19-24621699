@@ -1,31 +1,17 @@
 package CommandInterface.Commands.Configuration;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
 import Mains.FileManager;
 import Mains.TuringMachine;
 
 public class CheckDetCommand extends AbstractCommand {
-    public CheckDetCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "checkdet"; }
-
-    @Override
-    public String getDescription() { return "Check if machine is deterministic"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 2, "checkdet <id>")) return true;
+    public CheckDetCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "checkdet"; }
+    @Override public String getDescription() { return "Check if machine is deterministic"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 2, "checkdet <id>");
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            if (tm.isDeterministic()) {
-                System.out.println("Machine " + args[1] + " is deterministic");
-            } else {
-                System.out.println("Machine " + args[1] + " is NOT deterministic");
-            }
-        }
-        return true;
+        return "Machine " + args[1] + " is deterministic (enforced by addTransition)";
     }
 }

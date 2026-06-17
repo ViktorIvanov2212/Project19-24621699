@@ -12,91 +12,58 @@ import CommandInterface.Commands.File.SaveAsCommand;
 import CommandInterface.Commands.File.SaveCommand;
 import CommandInterface.Commands.HelpAndExit.ExitCommand;
 import CommandInterface.Commands.HelpAndExit.HelpCommand;
-import CommandInterface.Commands.Machine.*;
+import CommandInterface.Commands.Machine.ListCommand;
+import CommandInterface.Commands.Machine.NewTMCommand;
+import CommandInterface.Commands.Machine.PrintCommand;
 import Mains.FileManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Регистър на командите. Намира и изпълнява команди, връща String или хвърля грешка.
+ */
 public class CommandRegistry {
-    private Map<String, Command> commands;
-    private FileManager fileManager;
+    private final Map<String, Command> commands = new HashMap<>();
+    private final FileManager fileManager;
 
     public CommandRegistry(FileManager fileManager) {
         this.fileManager = fileManager;
-        this.commands = new HashMap<>();
-        registerCommands();
+        register(new OpenCommand(fileManager));
+        register(new CloseCommand(fileManager));
+        register(new SaveCommand(fileManager));
+        register(new SaveAsCommand(fileManager));
+        register(new ListCommand(fileManager));
+        register(new PrintCommand(fileManager));
+        register(new NewTMCommand(fileManager));
+        register(new AddStateCommand(fileManager));
+        register(new SetStartCommand(fileManager));
+        register(new AddAcceptCommand(fileManager));
+        register(new AddRejectCommand(fileManager));
+        register(new AddTransCommand(fileManager));
+        register(new RemoveTransCommand(fileManager));
+        register(new CheckDetCommand(fileManager));
+        register(new InitCommand(fileManager));
+        register(new StepCommand(fileManager));
+        register(new RunCommand(fileManager));
+        register(new StatusCommand(fileManager));
+        register(new TapeCommand(fileManager));
+        register(new ResetCommand(fileManager));
+        register(new AcceptsCommand(fileManager));
+        register(new TraceCommand(fileManager));
+        register(new ReportCommand(fileManager));
+        register(new HelpCommand(fileManager, commands));
+        register(new ExitCommand(fileManager));
     }
 
-    private void registerCommands() {
-        registerCommand(new OpenCommand(fileManager));
-        registerCommand(new CloseCommand(fileManager));
-        registerCommand(new SaveCommand(fileManager));
-        registerCommand(new SaveAsCommand(fileManager));
+    private void register(Command cmd) { commands.put(cmd.getName(), cmd); }
 
-        registerCommand(new ListCommand(fileManager));
-        registerCommand(new PrintCommand(fileManager));
-        registerCommand(new NewTMCommand(fileManager));
-        registerCommand(new LoadTMCommand(fileManager));
-        registerCommand(new SaveTMCommand(fileManager));
-
-        registerCommand(new AddStateCommand(fileManager));
-        registerCommand(new SetStartCommand(fileManager));
-        registerCommand(new AddAcceptCommand(fileManager));
-        registerCommand(new AddRejectCommand(fileManager));
-
-        registerCommand(new AddTransCommand(fileManager));
-        registerCommand(new RemoveTransCommand(fileManager));
-        registerCommand(new CheckDetCommand(fileManager));
-
-        registerCommand(new InitCommand(fileManager));
-        registerCommand(new StepCommand(fileManager));
-        registerCommand(new RunCommand(fileManager));
-        registerCommand(new StatusCommand(fileManager));
-        registerCommand(new TapeCommand(fileManager));
-        registerCommand(new ResetCommand(fileManager));
-        registerCommand(new AcceptsCommand(fileManager));
-        registerCommand(new TraceCommand(fileManager));
-        registerCommand(new ReportCommand(fileManager));
-
-        HelpCommand helpCommand = new HelpCommand(fileManager, commands);
-        registerCommand(helpCommand);
-        registerCommand(new ExitCommand(fileManager));
-    }
-
-    private void registerCommand(Command command) {
-        commands.put(command.getName(), command);
-    }
-
-    public boolean executeCommand(String input) {
+    public String executeCommand(String input) throws CommandException {
         String[] parts = input.trim().split("\\s+");
-        if (parts.length == 0 || parts[0].isEmpty()) {
-            return true;
-        }
-
-        String commandName = parts[0].toLowerCase();
-        Command command = commands.get(commandName);
-
-        if (command == null) {
-            System.out.println("Unknown command: " + commandName);
-            System.out.println("Type 'help' for available commands");
-            return true;
-        }
-
-        try {
-            return command.execute(parts);
-        } catch (Exception e) {
-            System.err.println("Error executing command: " + e.getMessage());
-            e.printStackTrace();
-            return true;
-        }
+        if (parts.length == 0) return null;
+        Command cmd = commands.get(parts[0].toLowerCase());
+        if (cmd == null) throw new CommandException("Unknown command: " + parts[0]);
+        return cmd.execute(parts);
     }
 
-    public Command getCommand(String name) {
-        return commands.get(name);
-    }
-
-    public Map<String, Command> getAllCommands() {
-        return new HashMap<>(commands);
-    }
+    public Map<String, Command> getCommands() { return commands; }
 }

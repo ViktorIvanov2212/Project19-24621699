@@ -1,32 +1,22 @@
 package CommandInterface.Commands.Configuration;
 
 import CommandInterface.AbstractCommand;
+import CommandInterface.CommandException;
 import Mains.FileManager;
+import Mains.State;
 import Mains.TuringMachine;
 
 public class AddAcceptCommand extends AbstractCommand {
-    public AddAcceptCommand(FileManager fileManager) {
-        super(fileManager);
-    }
-
-    @Override
-    public String getName() { return "addaccept"; }
-
-    @Override
-    public String getDescription() { return "Add accept state"; }
-
-    @Override
-    public boolean execute(String[] args) {
-        if (!validateArgs(args, 3, "addaccept <id> <state>")) return true;
+    public AddAcceptCommand(FileManager fm) { super(fm); }
+    @Override public String getName() { return "addaccept"; }
+    @Override public String getDescription() { return "Mark state as accepting"; }
+    @Override public String execute(String[] args) throws CommandException {
+        validateArgs(args, 3, "addaccept <id> <stateName>");
+        requireOpenFile();
         TuringMachine tm = getMachineById(args[1]);
-        if (tm != null) {
-            if (tm.addAcceptState(args[2])) {
-                System.out.println("Accept state " + args[2] + " added");
-                fileManager.markChanged();
-            } else {
-                System.out.println("Failed to add accept state");
-            }
-        }
-        return true;
+        State s = tm.getStates().get(args[2]);
+        if (s == null) throw new CommandException("State not found");
+        s.setType(State.Type.ACCEPT);
+        return "State " + args[2] + " marked as ACCEPT";
     }
 }

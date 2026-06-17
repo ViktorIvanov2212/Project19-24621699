@@ -1,31 +1,37 @@
 package Mains;
 
+import CommandInterface.CommandException;
 import CommandInterface.CommandRegistry;
 
 import java.util.Scanner;
 
 public class TuringMachineApplication {
     public static void main(String[] args) {
-        FileManager fileManager = new FileManager();
-        CommandRegistry registry = new CommandRegistry(fileManager);
-        Scanner scanner = new Scanner(System.in);
+        FileManager fm = new FileManager();
+        CommandRegistry reg = new CommandRegistry(fm);
+        Scanner sc = new Scanner(System.in);
 
         System.out.println("=== Turing Machine Simulator ===");
-        System.out.println("Type 'help' for available commands");
-        System.out.println();
+        System.out.println("Type 'help' for commands");
 
         boolean running = true;
         while (running) {
             System.out.print("> ");
-            String input = scanner.nextLine();
+            String input = sc.nextLine();
+            if (input.trim().isEmpty()) continue;
 
-            if (input.trim().isEmpty()) {
-                continue;
+            try {
+                String result = reg.executeCommand(input);
+                if ("__EXIT__".equals(result)) {
+                    running = false;
+                } else if (result != null) {
+                    System.out.println(result);
+                }
+            } catch (CommandException e) {
+                System.err.println("Error: " + e.getMessage());
             }
-
-            running = registry.executeCommand(input);
         }
-
-        scanner.close();
+        System.out.println("Exiting...");
+        sc.close();
     }
 }
