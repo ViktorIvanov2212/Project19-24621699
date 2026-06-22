@@ -60,16 +60,20 @@ public class TuringMachine {
         return true;
     }
 
-    /** Инициализира изпълнението с входна дума */
     public void init(String input) {
         tape.reset();
         steps = 0;
         running = true;
+
+        // Записва входа символ по символ
         for (int i = 0; i < input.length(); i++) {
             tape.write(input.charAt(i));
             tape.move(Transition.MoveDirection.R);
         }
-        tape.move(Transition.MoveDirection.L); // Връща на 0
+
+        // Връща главата на позиция 0
+        tape.setHeadPosition(0); // ✅ Правилно!
+
         currentState = states.get(startStateName);
     }
 

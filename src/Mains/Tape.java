@@ -14,7 +14,10 @@ public class Tape {
     public char read() {
         return cells.getOrDefault(headPosition, BLANK);
     }
-
+    /** Задава позицията на главата директно */
+    public void setHeadPosition(int position) {
+        this.headPosition = position;
+    }
     public void write(char symbol) {
         if (symbol == BLANK) cells.remove(headPosition);
         else cells.put(headPosition, symbol);
